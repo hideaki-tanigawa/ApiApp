@@ -57,7 +57,7 @@ class WebViewActivity : AppCompatActivity() {
             setImageResource(if (isFavorite) R.drawable.ic_star else R.drawable.ic_star_border)
 
             val id = intent.getStringExtra(KEY_ID).toString()
-            val name = intent.getStringExtra(KEY_ID).toString()
+            val name = intent.getStringExtra(KEY_NAME).toString()
             val imageUrl = intent.getStringExtra(KEY_IMAGEURL).toString()
             val url = intent.getStringExtra(KEY_URL).toString()
 

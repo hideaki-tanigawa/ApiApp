@@ -2,6 +2,7 @@ package jp.techacademy.hideaki.tanigawa.apiapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.viewpager2.widget.ViewPager2
@@ -45,6 +46,16 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (viewPagerAdapter.fragments[VIEW_PAGER_POSITION_API] as ApiFragment).updateView()
+        try {
+            (viewPagerAdapter.fragments[VIEW_PAGER_POSITION_FAVORITE] as FavoriteFragment).updateData()
+        }catch (e: NullPointerException){
+            Log.d("ERROR","Nullだから仕方ない")
+        }
     }
 
     override fun onClickItem(id: String, name: String, imageUrl: String, url: String) {
