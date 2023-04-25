@@ -69,7 +69,12 @@ class ApiFragment : Fragment() {
             }
             // Itemをクリックしたとき
             onClickItem = {
-                fragmentCallback?.onClickItem(it)
+                fragmentCallback?.onClickItem(
+                    it.id,
+                    it.name,
+                    it.logoImage,
+                    if (it.couponUrls.sp.isNotEmpty()) it.couponUrls.sp else it.couponUrls.pc
+                )
             }
         }
 

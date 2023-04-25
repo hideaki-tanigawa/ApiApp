@@ -3,6 +3,7 @@ package jp.techacademy.hideaki.tanigawa.apiapp
 import com.squareup.moshi.JsonClass
 
 import com.squareup.moshi.Json
+import java.net.Inet4Address
 
 @JsonClass(generateAdapter = true)
 data class ApiResponse(
@@ -18,6 +19,8 @@ data class Results(
 
 @JsonClass(generateAdapter = true)
 data class Shop(
+    @Json(name = "address")
+    val address: String,
     @Json(name = "coupon_urls")
     val couponUrls: CouponUrls,
     @Json(name = "id")
