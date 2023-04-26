@@ -3,6 +3,7 @@ package jp.techacademy.hideaki.tanigawa.apiapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.viewpager2.widget.ViewPager2
@@ -46,6 +47,8 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
+
+        binding.btSearch.setOnClickListener(onSearchClick())
     }
 
     override fun onResume() {
@@ -78,12 +81,19 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
      * Favoriteに追加するときのメソッド(Fragment -> Activity へ通知する)
      */
     override fun onAddFavorite(shop: Shop) {
-        FavoriteShop.insert(FavoriteShop().apply {
-            id = shop.id
-            name = shop.name
-            imageUrl = shop.logoImage
-            url = shop.couponUrls.sp.ifEmpty { shop.couponUrls.pc }
-        })
+        // お気に入り状態を取得
+        val isFavorite = FavoriteShop.findBy(shop.id) != null
+        if(isFavorite){
+            FavoriteShop.update(shop.id, "1")
+        }else{
+            FavoriteShop.insert(FavoriteShop().apply {
+                id = shop.id
+                name = shop.name
+                imageUrl = shop.logoImage
+                url = shop.couponUrls.sp.ifEmpty { shop.couponUrls.pc }
+                flag = "1"
+            })
+        }
         (viewPagerAdapter.fragments[VIEW_PAGER_POSITION_FAVORITE] as FavoriteFragment).updateData()
     }
 
@@ -110,9 +120,14 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
     }
 
     private fun deleteFavorite(id: String) {
-        FavoriteShop.delete(id)
+        FavoriteShop.update(id, "0")
         (viewPagerAdapter.fragments[VIEW_PAGER_POSITION_API] as ApiFragment).updateView()
         (viewPagerAdapter.fragments[VIEW_PAGER_POSITION_FAVORITE] as FavoriteFragment).updateData()
+    }
+
+    private fun onSearchClick() = View.OnClickListener {
+        val category = binding.etCategory.text.toString()
+        (viewPagerAdapter.fragments[VIEW_PAGER_POSITION_API] as ApiFragment).searchInfo(category)
     }
 
     companion object {

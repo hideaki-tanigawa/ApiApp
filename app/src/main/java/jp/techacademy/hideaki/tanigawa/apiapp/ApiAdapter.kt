@@ -1,5 +1,6 @@
 package jp.techacademy.hideaki.tanigawa.apiapp
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -73,7 +74,7 @@ class ApiItemViewHolder(private val binding: RecyclerFavoriteBinding) :
         // 星の処理
         binding.favoriteImageView.apply {
             // お気に入り状態を取得
-            val isFavorite = FavoriteShop.findBy(shop.id) != null
+            val isFavorite = FavoriteShop.findByFlag(shop.id) != null
 
             // 白抜きの星を設定
             setImageResource(if (isFavorite) R.drawable.ic_star else R.drawable.ic_star_border)

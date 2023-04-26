@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,8 @@ import java.io.IOException
 class ApiFragment : Fragment() {
     private var _binding: FragmentApiBinding? = null
     private val binding get() = _binding!!
+
+    private val Category = "ランチ"
 
     private val apiAdapter by lazy { ApiAdapter() }
     private val handler = Handler(Looper.getMainLooper())
@@ -108,16 +111,16 @@ class ApiFragment : Fragment() {
                     // ユーザビリティを考えると、一番下にスクロールしてから追加した場合、一度スクロールが止まるので、ユーザーは気付きにくい
                     // ここでは、一番下から5番目を表示した時に追加読み込みする様に実装する
                     if (!isLoading && lastVisibleItem >= totalCount - 6) { // 読み込み中でない、かつ、現在のスクロール位置から下に5件見えていないアイテムがある
-                        updateData(true)
+                        updateData(true, Category)
                     }
                 }
             })
             // -----追加ここまで
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
-            updateData()
+            updateData(false, Category)
         }
-        updateData()
+        updateData(false, Category)
     }
 
     /**
@@ -128,8 +131,12 @@ class ApiFragment : Fragment() {
         apiAdapter.notifyItemRangeChanged(0, apiAdapter.itemCount)
     }
 
+    fun searchInfo(category: String) {
+        updateData(false,category)
+    }
+
     // -----変更ここから
-    private fun updateData(isAdd: Boolean = false) {
+     private fun updateData(isAdd: Boolean = false, category: String) {
         // 読み込み中なら処理を行わずに終了
         if (isLoading) {
             return
@@ -152,7 +159,7 @@ class ApiFragment : Fragment() {
             .append("&start=").append(start) // 何件目からのデータを取得するか
             .append("&count=").append(COUNT) // 1回で20件取得する
             .append("&keyword=")
-            .append(getString(R.string.api_keyword)) // お店の検索ワード。ここでは例として「ランチ」を検索
+            .append(category) // お店の検索ワード。ここでは例として「ランチ」を検索
             .append("&format=json") // ここで利用しているAPIは戻りの形をxmlかjsonが選択することができる。Androidで扱う場合はxmlよりもjsonの方が扱いやすいので、jsonを選択
             .toString()
         val client = OkHttpClient.Builder()
@@ -194,6 +201,7 @@ class ApiFragment : Fragment() {
 
     private fun updateRecyclerView(list: List<Shop>) {
         apiAdapter.submitList(list)
+        updateView()
         // SwipeRefreshLayoutのくるくるを消す
         binding.swipeRefreshLayout.isRefreshing = false
     }

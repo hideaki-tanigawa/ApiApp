@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import jp.techacademy.hideaki.tanigawa.apiapp.databinding.ActivityWebViewBinding
 
@@ -81,12 +82,20 @@ class WebViewActivity : AppCompatActivity() {
         shopImageUrl: String,
         shopUrl: String
     ) {
-        FavoriteShop.insert (FavoriteShop().apply {
-            id = shopId
-            name = shopName
-            imageUrl = shopImageUrl
-            url = shopUrl
-        })
+        // お気に入り状態を取得
+        val isFavorite = FavoriteShop.findBy(shopId) != null
+        if(isFavorite){
+            FavoriteShop.update(shopId, "1")
+        }else{
+            Log.d("TEST","もしかしてここ通った？")
+            FavoriteShop.insert (FavoriteShop().apply {
+                id = shopId
+                name = shopName
+                imageUrl = shopImageUrl
+                url = shopUrl
+                flag = "1"
+            })
+        }
         processStar()
     }
 
@@ -102,7 +111,7 @@ class WebViewActivity : AppCompatActivity() {
             .setTitle(R.string.delete_favorite_dialog_title)
             .setMessage(R.string.delete_favorite_dialog_message)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                FavoriteShop.delete(id)
+                FavoriteShop.update(id, "0")
                 processStar()
             }
             .setNegativeButton(android.R.string.cancel) { _, _ -> }
